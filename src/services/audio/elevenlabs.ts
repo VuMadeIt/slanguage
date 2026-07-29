@@ -28,7 +28,9 @@ export class ElevenLabsService {
   async synthesize(line: VoiceLine): Promise<TtsResult> {
     const voice = getVoice(line.voice);
     if (!voice) {
-      throw new Error(`Unknown voice key "${line.voice}". Add it to data/voices.ts.`);
+      throw new Error(
+        `Unknown voice key "${line.voice}". Add it to data/voices.ts.`,
+      );
     }
     if (voice.elevenLabsVoiceId.startsWith('REPLACE_')) {
       throw new Error(
@@ -36,8 +38,14 @@ export class ElevenLabsService {
       );
     }
 
+    const taggedText = line.performance
+      ? `[${line.performance}] ${line.text}`
+      : `${voice.defaultPerformance} ${line.text}`;
+
     const response = await fetch(
-      `https://api.elevenlabs.io/v1/text-to-speech/${voice.elevenLabsVoiceId}`,
+      `https://api.elevenlabs.io/v1/text-to-speech/${encodeURIComponent(
+        voice.elevenLabsVoiceId,
+      )}?output_format=mp3_44100_128`,
       {
         method: 'POST',
         headers: {
@@ -46,13 +54,14 @@ export class ElevenLabsService {
           Accept: 'audio/mpeg',
         },
         body: JSON.stringify({
-          text: line.text,
+          text: taggedText,
           model_id: this.modelId,
           voice_settings: {
             stability: voice.settings.stability,
             similarity_boost: voice.settings.similarityBoost,
             style: voice.settings.style,
             use_speaker_boost: voice.settings.speakerBoost,
+            speed: voice.settings.speed,
           },
         }),
       },
@@ -80,6 +89,6 @@ export function createElevenLabsService(
   if (!apiKey) return null;
   return new ElevenLabsService(
     apiKey,
-    process.env.ELEVENLABS_MODEL ?? 'eleven_multilingual_v2',
+    process.env.ELEVENLABS_MODEL ?? 'eleven_v3',
   );
 }

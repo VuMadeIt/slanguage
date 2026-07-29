@@ -18,10 +18,10 @@ const DEMO_B =
 
 /** Fixed cast description, repeated per render so the same people show up twice. */
 const CAST =
-  'Characters, all drawn as crude paper cutouts with huge round heads and tiny bodies: YOU, 17, flat brown skin, round dark curly hair drawn as three overlapping circles, navy shirt, phone in hand. RICO, 24, rapper, flat brown skin, black cap, black jacket, small dark sunglasses he never removes, holding a smoothie cup. THE MANAGER, adult, flat pale skin, black bob, round glasses, dark coat, permanently unimpressed. SECURITY, adult, enormous, flat tan skin, buzz cut, all black, sunglasses, no neck. Setting: flat painted city sidewalk outside a smoothie shop.';
+  'Characters, all drawn as crude paper cutouts with huge round heads and tiny bodies: YOU, 17, flat brown skin, round dark curly hair drawn as three overlapping circles, navy shirt, phone in hand. KANYE, adult rapper and designer, flat brown skin, black cap, black jacket, small dark sunglasses, holding a smoothie cup; this is a satirical cutout likeness, never photorealistic. THE MANAGER, adult, flat pale skin, black bob, round glasses, dark coat, permanently unimpressed. SECURITY, adult, enormous, flat tan skin, buzz cut, all black, sunglasses, no neck. Setting: flat painted city sidewalk outside a smoothie shop.';
 
 /**
- * "Rico in the Wild" — 4 decision points, 5 endings.
+ * "Kanye in the Wild" — 4 decision points, 5 endings.
  *
  * Shape of the graph:
  *
@@ -37,10 +37,11 @@ const CAST =
 export const meetingACelebrity: Scenario = {
   id: 'meeting-a-celebrity',
   planetId: 'clout',
-  title: 'Rico in the Wild',
-  tagline: 'You just clocked your favourite artist buying a smoothie.',
+  title: 'Kanye in the Wild',
+  tagline:
+    'You just clocked Kanye buying a smoothie. Every era is in the room.',
   description:
-    'Ninety seconds of access and no script. Compliment him wrong and you learn what "mid" costs; get the tone right and you leave with a mutual follow.',
+    'Ninety seconds, one smoothie, and a discography-sized personality. Reference the right era, survive the laugh, and do not turn Graduation into your graduation speech.',
   difficulty: 'starter',
   estimatedMinutes: 4,
   emoji: '🎤',
@@ -66,24 +67,40 @@ export const meetingACelebrity: Scenario = {
       kind: 'scene',
       id: 'intro',
       title: 'The Clock',
-      speaker: 'Rico',
-      caption: "Rico looks up from his phone. He's already half-smiling.",
+      speaker: 'Kanye',
+      caption: "Kanye looks up from his phone. He's already laughing.",
       clip: {
         assetPath: 'meeting-a-celebrity/intro.mp4',
         mockUrl: DEMO_A,
-        trim: { startSec: 0, endSec: 4.6 },
+        trim: { startSec: 0, endSec: 8 },
         generation: {
-          prompt: `${CAST} RICO stands outside the smoothie shop looking down at his phone, then lifts his head in one jerky movement and half-smiles directly at YOU. YOU stand frozen a few feet away. Flat sidewalk, identical cutout pedestrians looping past behind them. ${LOOK}`,
-          motion: 'Static flat two-shot, RICO’s head snaps up on a single frame',
+          prompt: `${CAST} KANYE stands outside the smoothie shop looking down at his phone, then lifts his head in one jerky movement and laughs directly at YOU as if the encounter was his idea. YOU stand frozen a few feet away. Flat sidewalk, identical cutout pedestrians looping past behind them. ${LOOK}`,
+          motion:
+            'Static flat two-shot, KANYE’s head snaps up on a single frame',
           aspectRatio: '9:16',
-          durationSec: 5,
+          durationSec: 8,
           seed: 120001,
+        },
+        audio: {
+          assetPath: 'meeting-a-celebrity/intro.mp3',
+          lines: [
+            {
+              speaker: 'Kanye',
+              voice: 'kanye',
+              text: 'You froze like the beat just dropped. Ha! What era brought you over here?',
+              delivery:
+                'grand, amused, welcoming himself into the conversation',
+              performance:
+                'laughs loudly, then speaks with theatrical confidence',
+              atSec: 0.6,
+            },
+          ],
         },
         art: {
           setting: 'street',
           characters: [
             { key: 'ari', expression: 'shock' },
-            { key: 'rico', expression: 'neutral' },
+            { key: 'kanye', expression: 'happy' },
           ],
           prop: 'phone',
           crowd: true,
@@ -92,11 +109,11 @@ export const meetingACelebrity: Scenario = {
       },
       slangTermIds: [],
       prompt: 'He clocked you. What do you open with?',
-      choiceCueAtSec: 3.2,
+      choiceCueAtSec: 6.4,
       choices: [
         {
           id: 'c-ate',
-          label: 'Yo — you ate on that last album. No cap.',
+          label: 'You ate on Donda. No cap — but Graduation still owns me.',
           tone: '(calm, like a peer)',
           nextNodeId: 'compliment-hit',
           outcome: 'optimal',
@@ -106,7 +123,7 @@ export const meetingACelebrity: Scenario = {
         },
         {
           id: 'c-mid',
-          label: 'Ngl the last album was kinda mid, but I still rock with you.',
+          label: 'Ngl, Yeezus was kinda mid, but I still rock with you.',
           tone: '(honest, badly timed)',
           nextNodeId: 'compliment-miss',
           outcome: 'wrong',
@@ -131,35 +148,49 @@ export const meetingACelebrity: Scenario = {
       kind: 'scene',
       id: 'compliment-hit',
       title: 'Respect Registered',
-      speaker: 'Rico',
+      speaker: 'Kanye',
       caption: '"Appreciate that, fr. What do you do?"',
       clip: {
         assetPath: 'meeting-a-celebrity/compliment-hit.mp4',
         mockUrl: DEMO_B,
-        trim: { startSec: 0, endSec: 5.4 },
+        trim: { startSec: 0, endSec: 9.7 },
         generation: {
-          prompt: `${CAST} RICO's shoulders drop and he nods twice, genuinely pleased, gesturing at YOU with the smoothie cup. YOU relax slightly. The looping pedestrians behind them do not care at all. ${LOOK}`,
-          motion: 'Flat two-shot, RICO nods on a two-frame cycle',
+          prompt: `${CAST} KANYE's shoulders drop and he nods twice, genuinely pleased, gesturing at YOU with the smoothie cup, then laughing loudly at his own reference to Graduation. YOU relax slightly. The looping pedestrians behind them do not care at all. ${LOOK}`,
+          motion: 'Flat two-shot, KANYE nods and laughs on a two-frame cycle',
           aspectRatio: '9:16',
-          durationSec: 6,
+          durationSec: 10,
           seed: 120002,
+        },
+        audio: {
+          assetPath: 'meeting-a-celebrity/compliment-hit.mp3',
+          lines: [
+            {
+              speaker: 'Kanye',
+              voice: 'kanye',
+              text: 'You said I ate? Ha ha! Graduation appetite. College Dropout ambition. I hear you. What do you make?',
+              delivery:
+                'delighted, fast, delighted by his own album comparison',
+              performance: 'laughs warmly, excited and expansive',
+              atSec: 0.6,
+            },
+          ],
         },
         art: {
           setting: 'street',
           characters: [
             { key: 'ari', expression: 'happy' },
-            { key: 'rico', expression: 'happy' },
+            { key: 'kanye', expression: 'happy' },
           ],
           crowd: true,
         },
       },
       slangTermIds: ['fr'],
       prompt: 'He asked what you do. How do you answer?',
-      choiceCueAtSec: 3.8,
+      choiceCueAtSec: 8.1,
       choices: [
         {
           id: 'c-humble',
-          label: "I make edits. Lowkey trying to go viral, but it's slow.",
+          label: 'I make edits. Lowkey chasing that Graduation stadium energy.',
           tone: '(understated)',
           nextNodeId: 'pitch-humble',
           outcome: 'optimal',
@@ -169,7 +200,7 @@ export const meetingACelebrity: Scenario = {
         },
         {
           id: 'c-delulu',
-          label: "Same thing as you, basically. We're peers.",
+          label: 'Same thing as you. Watch the Throne has room for me.',
           tone: '(straight-faced)',
           nextNodeId: 'pitch-delulu',
           outcome: 'risky',
@@ -184,24 +215,38 @@ export const meetingACelebrity: Scenario = {
       kind: 'scene',
       id: 'compliment-miss',
       title: 'Temperature Drop',
-      speaker: 'Rico',
+      speaker: 'Kanye',
       caption: 'The smile goes flat. "Kinda mid."',
       clip: {
         assetPath: 'meeting-a-celebrity/compliment-miss.mp4',
         mockUrl: DEMO_A,
-        trim: { startSec: 0, endSec: 4.6 },
+        trim: { startSec: 0, endSec: 7.2 },
         generation: {
-          prompt: `${CAST} RICO's smile disappears between one frame and the next, replaced by a completely flat line of a mouth. He does not move otherwise. He takes one very slow sip of the smoothie. YOU realise immediately. ${LOOK}`,
-          motion: 'No camera move at all; the smile swaps out on a single frame',
+          prompt: `${CAST} KANYE's smile disappears between one frame and the next, replaced by a completely flat line of a mouth. He does not move otherwise. He takes one very slow sip of the smoothie as if evaluating whether your opinion belongs on Yeezus. YOU realise immediately. ${LOOK}`,
+          motion:
+            'No camera move at all; the smile swaps out on a single frame',
           aspectRatio: '9:16',
-          durationSec: 5,
+          durationSec: 8,
           seed: 120003,
+        },
+        audio: {
+          assetPath: 'meeting-a-celebrity/compliment-miss.mp3',
+          lines: [
+            {
+              speaker: 'Kanye',
+              voice: 'kanye',
+              text: 'Mid? Ha. You walked up to Yeezus and brought a six out of ten.',
+              delivery: 'one dry laugh, then total disbelief',
+              performance: 'short disbelieving laugh, then dead serious',
+              atSec: 0.6,
+            },
+          ],
         },
         art: {
           setting: 'street',
           characters: [
             { key: 'ari', expression: 'neutral' },
-            { key: 'rico', expression: 'flat' },
+            { key: 'kanye', expression: 'flat' },
           ],
           crowd: true,
           gag: 'TEMPERATURE DROP',
@@ -209,11 +254,11 @@ export const meetingACelebrity: Scenario = {
       },
       slangTermIds: ['mid'],
       prompt: 'You felt that land. Fix it, or stand on it?',
-      choiceCueAtSec: 3.2,
+      choiceCueAtSec: 5.6,
       choices: [
         {
           id: 'c-recover',
-          label: "That came out wrong — it's a grower. It's giving 3am album.",
+          label: "That came out wrong — it's giving 808s at 3am.",
           tone: '(quick save)',
           nextNodeId: 'recover',
           outcome: 'acceptable',
@@ -238,25 +283,47 @@ export const meetingACelebrity: Scenario = {
       kind: 'scene',
       id: 'compliment-chaos',
       title: 'Somebody Call Security',
-      speaker: 'Rico',
+      speaker: 'Kanye',
       caption: 'He laughs, but he steps back. Someone in black moves in.',
       clip: {
         assetPath: 'meeting-a-celebrity/compliment-chaos.mp4',
         mockUrl: DEMO_B,
-        trim: { startSec: 0, endSec: 5.4 },
+        trim: { startSec: 0, endSec: 9.3 },
         generation: {
-          prompt: `${CAST} YOU hold a phone up high with both arms, mouth wide open mid-shout. RICO laughs but slides one full body-width away without bending his legs. SECURITY enters frame from the right, filling a third of it, and stops. The looping pedestrians keep looping. ${LOOK}`,
-          motion: 'RICO slides sideways in flat jerky steps; SECURITY arrives on one cut',
+          prompt: `${CAST} YOU hold a phone up high with both arms, mouth wide open mid-shout. KANYE laughs very loudly but slides one full body-width away without bending his legs. SECURITY enters frame from the right, filling a third of it, and stops. The looping pedestrians keep looping. ${LOOK}`,
+          motion:
+            'KANYE slides sideways laughing in flat jerky steps; SECURITY arrives on one cut',
           aspectRatio: '9:16',
-          durationSec: 6,
+          durationSec: 10,
           seed: 120004,
+        },
+        audio: {
+          assetPath: 'meeting-a-celebrity/compliment-chaos.mp3',
+          lines: [
+            {
+              speaker: 'Kanye',
+              voice: 'kanye',
+              text: 'Chat? Ha ha ha! This is a sidewalk, not The Life of Pablo listening party.',
+              delivery: 'big laugh, entertained but stepping away',
+              performance: 'bursts into loud laughter, then speaks playfully',
+              atSec: 0.6,
+            },
+            {
+              speaker: 'Security',
+              voice: 'security',
+              text: 'Phone down.',
+              delivery: 'low, final, no wasted air',
+              performance: 'deep voice, firmly',
+              atSec: 6.1,
+            },
+          ],
         },
         art: {
           setting: 'street',
           characters: [
             { key: 'security', expression: 'flat', back: true },
             { key: 'ari', expression: 'yell' },
-            { key: 'rico', expression: 'shock' },
+            { key: 'kanye', expression: 'happy' },
           ],
           prop: 'phone-raised',
           crowd: true,
@@ -265,7 +332,7 @@ export const meetingACelebrity: Scenario = {
       },
       slangTermIds: [],
       prompt: 'Security is walking over. Say something.',
-      choiceCueAtSec: 3.6,
+      choiceCueAtSec: 7.7,
       // The only node with a clock: freezing here is itself a decision, and the
       // timeout lands you in the branch where you never stopped filming.
       decisionSeconds: 12,
@@ -298,36 +365,50 @@ export const meetingACelebrity: Scenario = {
       kind: 'scene',
       id: 'pitch-humble',
       title: 'The Opening',
-      speaker: 'Rico',
+      speaker: 'Kanye',
       caption: '"Respect. Send me one." He\u2019s got about a minute.',
       clip: {
         assetPath: 'meeting-a-celebrity/pitch-humble.mp4',
         mockUrl: DEMO_A,
-        trim: { startSec: 0.4, endSec: 4.8 },
+        trim: { startSec: 0, endSec: 10.4 },
         generation: {
-          prompt: `${CAST} RICO points at YOU with the smoothie straw, approving. YOU stand a little straighter. Behind them THE MANAGER waits by a car door, tapping one foot on a two-frame loop, watching the clock. ${LOOK}`,
-          motion: 'Flat two-shot, THE MANAGER visible and looping impatiently behind',
+          prompt: `${CAST} KANYE points at YOU with the smoothie straw, approving, and laughs about The College Dropout meeting Late Registration on a sidewalk. YOU stand a little straighter. Behind them THE MANAGER waits by a car door, tapping one foot on a two-frame loop, watching the clock. ${LOOK}`,
+          motion:
+            'Flat two-shot, THE MANAGER visible and looping impatiently behind',
           aspectRatio: '9:16',
-          durationSec: 5,
+          durationSec: 11,
           seed: 120005,
+        },
+        audio: {
+          assetPath: 'meeting-a-celebrity/pitch-humble.mp3',
+          lines: [
+            {
+              speaker: 'Kanye',
+              voice: 'kanye',
+              text: 'Edits? Ha! College Dropout energy with Late Registration paperwork. Send me the one that feels like a stadium.',
+              delivery: 'approving, building the idea bigger as he speaks',
+              performance: 'chuckles, then speaks with growing excitement',
+              atSec: 0.6,
+            },
+          ],
         },
         art: {
           setting: 'street',
           characters: [
             { key: 'manager', expression: 'flat', back: true },
             { key: 'ari', expression: 'happy' },
-            { key: 'rico', expression: 'happy' },
+            { key: 'kanye', expression: 'happy' },
           ],
           crowd: true,
         },
       },
       slangTermIds: [],
       prompt: 'This is the moment. What do you actually ask for?',
-      choiceCueAtSec: 3.4,
+      choiceCueAtSec: 8.8,
       choices: [
         {
           id: 'c-photo',
-          label: "Can I get one pic? I'll tag you, no pressure.",
+          label: 'One Graduation-pose pic? I’ll tag you, no pressure.',
           tone: '(easy to say no to)',
           nextNodeId: 'photo-op',
           outcome: 'optimal',
@@ -337,7 +418,8 @@ export const meetingACelebrity: Scenario = {
         },
         {
           id: 'c-track',
-          label: "Put me on the next track. I'm the plug out here.",
+          label:
+            "Put me on the next track. I'm the plug — Kids See Ghosts energy.",
           tone: '(swinging big)',
           nextNodeId: 'over-ask',
           outcome: 'wrong',
@@ -352,35 +434,48 @@ export const meetingACelebrity: Scenario = {
       kind: 'scene',
       id: 'pitch-delulu',
       title: 'Read the Eyebrow',
-      speaker: 'Rico',
+      speaker: 'Kanye',
       caption: 'One eyebrow. Amused, but measuring you.',
       clip: {
         assetPath: 'meeting-a-celebrity/pitch-delulu.mp4',
         mockUrl: DEMO_B,
-        trim: { startSec: 0.5, endSec: 5.8 },
+        trim: { startSec: 0, endSec: 7.6 },
         generation: {
-          prompt: `${CAST} RICO tilts his head very slightly and one eyebrow rises above the rim of his sunglasses. Nothing else on him moves for a long time. YOU wait. The silence is doing all the work. ${LOOK}`,
+          prompt: `${CAST} KANYE tilts his head very slightly and one eyebrow rises above the rim of his sunglasses. Nothing else on him moves for a long time. YOU wait. A tiny paper sign reading FANTASY appears and vanishes behind him, a visual reference to My Beautiful Dark Twisted Fantasy. ${LOOK}`,
           motion: 'Absolutely locked off; only one eyebrow animates, once',
           aspectRatio: '9:16',
-          durationSec: 6,
+          durationSec: 8,
           seed: 120006,
+        },
+        audio: {
+          assetPath: 'meeting-a-celebrity/pitch-delulu.mp3',
+          lines: [
+            {
+              speaker: 'Kanye',
+              voice: 'kanye',
+              text: 'Peers? Ha ha. That is a beautiful dark twisted fantasy right there.',
+              delivery: 'amused, measuring, enjoying the audacity',
+              performance: 'slow amused laugh, then theatrically',
+              atSec: 0.6,
+            },
+          ],
         },
         art: {
           setting: 'street',
           characters: [
             { key: 'ari', expression: 'neutral' },
-            { key: 'rico', expression: 'flat' },
+            { key: 'kanye', expression: 'flat' },
           ],
           crowd: true,
         },
       },
       slangTermIds: [],
       prompt: 'That landed strange. Do you own it?',
-      choiceCueAtSec: 4,
+      choiceCueAtSec: 6,
       choices: [
         {
           id: 'c-selfaware',
-          label: "Okay that was delulu, ignore me. I'm cooked.",
+          label: 'Okay, that was MBDTF-level delulu. I’m cooked.',
           tone: '(laughing at yourself)',
           nextNodeId: 'photo-op',
           outcome: 'acceptable',
@@ -390,7 +485,7 @@ export const meetingACelebrity: Scenario = {
         },
         {
           id: 'c-insist',
-          label: "I'm serious. Check my numbers.",
+          label: 'I’m serious. Check my numbers — The Life of Pablo rollout.',
           tone: '(pulling out analytics)',
           nextNodeId: 'ending-meme',
           outcome: 'wrong',
@@ -405,35 +500,49 @@ export const meetingACelebrity: Scenario = {
       kind: 'scene',
       id: 'recover',
       title: 'Borrowed Time',
-      speaker: 'Rico',
+      speaker: 'Kanye',
       caption: 'He half-nods. "Alright." The smoothie is almost done.',
       clip: {
         assetPath: 'meeting-a-celebrity/recover.mp4',
         mockUrl: DEMO_A,
-        trim: { startSec: 0, endSec: 4.6 },
+        trim: { startSec: 0, endSec: 8.9 },
         generation: {
-          prompt: `${CAST} RICO gives one small grudging nod and drains the smoothie with a long loud slurp, watching YOU the entire time. The empty cup is now a countdown. ${LOOK}`,
-          motion: 'Flat two-shot, one nod, then total stillness while he drinks',
+          prompt: `${CAST} KANYE gives one small grudging nod, chuckles once, and drains the smoothie with a long loud slurp, watching YOU the entire time. The empty cup is now an 808s-style heartbreak countdown. ${LOOK}`,
+          motion:
+            'Flat two-shot, one nod, then total stillness while he drinks',
           aspectRatio: '9:16',
-          durationSec: 5,
+          durationSec: 9,
           seed: 120007,
+        },
+        audio: {
+          assetPath: 'meeting-a-celebrity/recover.mp3',
+          lines: [
+            {
+              speaker: 'Kanye',
+              voice: 'kanye',
+              text: 'Three A.M. album? Okay. That is 808s weather. Ha. You recovered. You have five seconds.',
+              delivery: 'grudging approval followed by a tiny laugh',
+              performance: 'small chuckle, thoughtful, then firm',
+              atSec: 0.6,
+            },
+          ],
         },
         art: {
           setting: 'street',
           characters: [
             { key: 'ari', expression: 'neutral' },
-            { key: 'rico', expression: 'neutral' },
+            { key: 'kanye', expression: 'neutral' },
           ],
           crowd: true,
         },
       },
       slangTermIds: [],
       prompt: "You've got about five seconds of goodwill. Spend them.",
-      choiceCueAtSec: 3.2,
+      choiceCueAtSec: 7.3,
       choices: [
         {
           id: 'c-photo-2',
-          label: "Can I get one pic? Then I'll let you go.",
+          label: 'One pic, Graduation pose, then I’m gone.',
           tone: '(short and out)',
           nextNodeId: 'photo-op',
           outcome: 'acceptable',
@@ -458,24 +567,46 @@ export const meetingACelebrity: Scenario = {
       kind: 'scene',
       id: 'photo-op',
       title: 'One Pic',
-      speaker: 'Rico',
+      speaker: 'Kanye',
       caption: 'Shutter. He\u2019s already turning toward the door.',
       clip: {
         assetPath: 'meeting-a-celebrity/photo-op.mp4',
         mockUrl: DEMO_B,
-        trim: { startSec: 0, endSec: 5.6 },
+        trim: { startSec: 0, endSec: 9.1 },
         generation: {
-          prompt: `${CAST} YOU and RICO stand shoulder to shoulder facing the camera for a selfie, both perfectly still. A white flash frame. On the very next frame RICO's body has already rotated toward the shop door while YOU are still smiling at the phone. ${LOOK}`,
-          motion: 'Hold, one white flash frame, then RICO is instantly facing away',
+          prompt: `${CAST} YOU and KANYE stand shoulder to shoulder facing the camera for a selfie. KANYE laughs during the photo. A white flash frame. On the very next frame KANYE's body has already rotated toward the shop door while YOU are still smiling at the phone. ${LOOK}`,
+          motion:
+            'Hold, one white flash frame, then KANYE is instantly facing away',
           aspectRatio: '9:16',
-          durationSec: 6,
+          durationSec: 10,
           seed: 120008,
+        },
+        audio: {
+          assetPath: 'meeting-a-celebrity/photo-op.mp3',
+          lines: [
+            {
+              speaker: 'Kanye',
+              voice: 'kanye',
+              text: 'One photo. Ha! Make it Graduation, not school-picture day.',
+              delivery: 'laughing through the instruction',
+              performance: 'laughs brightly, playful and confident',
+              atSec: 0.6,
+            },
+            {
+              speaker: 'Manager',
+              voice: 'manager',
+              text: 'That was the one photo.',
+              delivery: 'precise, already ending the interaction',
+              performance: 'controlled and matter-of-fact',
+              atSec: 5,
+            },
+          ],
         },
         art: {
           setting: 'street',
           characters: [
             { key: 'ari', expression: 'happy' },
-            { key: 'rico', expression: 'neutral' },
+            { key: 'kanye', expression: 'happy' },
           ],
           prop: 'phone-raised',
           crowd: true,
@@ -483,13 +614,14 @@ export const meetingACelebrity: Scenario = {
       },
       slangTermIds: [],
       prompt: 'Last words. Make them count.',
-      choiceCueAtSec: 3.8,
+      choiceCueAtSec: 7.5,
       decisionSeconds: 15,
       timeoutChoiceId: 'c-followback',
       choices: [
         {
           id: 'c-gracious',
-          label: 'Appreciate you fr. Enjoy your night.',
+          label:
+            'Appreciate you fr. Donda stays in rotation. Enjoy your night.',
           tone: '(and you actually leave)',
           nextNodeId: 'ending-mutuals',
           outcome: 'optimal',
@@ -515,23 +647,45 @@ export const meetingACelebrity: Scenario = {
       id: 'over-ask',
       title: 'The Manager',
       speaker: 'Manager',
-      caption: 'A hand lands on Rico\u2019s shoulder. "We\u2019re good?"',
+      caption: 'A hand lands on Kanye\u2019s shoulder. "We\u2019re good?"',
       clip: {
         assetPath: 'meeting-a-celebrity/over-ask.mp4',
         mockUrl: DEMO_A,
-        trim: { startSec: 0, endSec: 4.6 },
+        trim: { startSec: 0, endSec: 9.9 },
         generation: {
-          prompt: `${CAST} THE MANAGER's arm extends across the frame in one straight jerky motion and lands flat on RICO's shoulder. THE MANAGER looks only at YOU, never at RICO, and does not blink. RICO says nothing. ${LOOK}`,
-          motion: 'The arm crosses frame in a single hard movement, then everything stops',
+          prompt: `${CAST} THE MANAGER's arm extends across the frame in one straight jerky motion and lands flat on KANYE's shoulder. THE MANAGER looks only at YOU, never at KANYE, and does not blink. KANYE quietly laughs once. ${LOOK}`,
+          motion:
+            'The arm crosses frame in a single hard movement, then everything stops',
           aspectRatio: '9:16',
-          durationSec: 5,
+          durationSec: 10,
           seed: 120009,
+        },
+        audio: {
+          assetPath: 'meeting-a-celebrity/over-ask.mp3',
+          lines: [
+            {
+              speaker: 'Kanye',
+              voice: 'kanye',
+              text: 'The plug? Ha! Watch the Throne had two chairs. Neither one was an internship.',
+              delivery: 'huge laugh, then an absurdly specific correction',
+              performance: 'laughs loudly, then speaks with mock seriousness',
+              atSec: 0.6,
+            },
+            {
+              speaker: 'Manager',
+              voice: 'manager',
+              text: 'We are good now.',
+              delivery: 'not phrased as a question',
+              performance: 'firmly and quietly',
+              atSec: 6.3,
+            },
+          ],
         },
         art: {
           setting: 'street',
           characters: [
             { key: 'ari', expression: 'neutral' },
-            { key: 'rico', expression: 'flat' },
+            { key: 'kanye', expression: 'happy' },
             { key: 'manager', expression: 'angry' },
           ],
           crowd: true,
@@ -540,7 +694,7 @@ export const meetingACelebrity: Scenario = {
       },
       slangTermIds: [],
       prompt: 'Walk it back, or stand on business?',
-      choiceCueAtSec: 3.2,
+      choiceCueAtSec: 8.3,
       choices: [
         {
           id: 'c-joke',
@@ -571,24 +725,38 @@ export const meetingACelebrity: Scenario = {
       kind: 'beat',
       id: 'double-down',
       title: 'Standing On It',
-      speaker: 'Rico',
+      speaker: 'Kanye',
       caption: '"Aight." He turns. He does not turn back.',
       clip: {
         assetPath: 'meeting-a-celebrity/double-down.mp4',
         mockUrl: DEMO_B,
-        trim: { startSec: 0, endSec: 3.6 },
+        trim: { startSec: 0, endSec: 5.5 },
         generation: {
-          prompt: `${CAST} RICO's whole body flips to face away on one frame. He drops the empty smoothie cup in a bin without looking and walks off in flat jerky steps. YOU are left alone in frame with the looping pedestrians. ${LOOK}`,
-          motion: 'Body flips on one frame, then a repeating two-pose walk out of frame',
+          prompt: `${CAST} KANYE's whole body flips to face away on one frame. He laughs once, drops the empty smoothie cup in a bin without looking, and walks off in flat jerky steps. YOU are left alone in frame with the looping pedestrians. ${LOOK}`,
+          motion:
+            'Body flips on one frame, then a repeating two-pose walk out of frame',
           aspectRatio: '9:16',
-          durationSec: 4,
+          durationSec: 6,
           seed: 120010,
+        },
+        audio: {
+          assetPath: 'meeting-a-celebrity/double-down.mp3',
+          lines: [
+            {
+              speaker: 'Kanye',
+              voice: 'kanye',
+              text: 'Aight. Ha. That take can live on its own little Donda island.',
+              delivery: 'one dismissive laugh while already leaving',
+              performance: 'brief dry laugh, dismissive',
+              atSec: 0.6,
+            },
+          ],
         },
         art: {
           setting: 'street',
           characters: [
             { key: 'ari', expression: 'flat' },
-            { key: 'rico', expression: 'angry' },
+            { key: 'kanye', expression: 'flat' },
           ],
           crowd: true,
           gag: 'HE DOES NOT TURN BACK',
@@ -607,13 +775,35 @@ export const meetingACelebrity: Scenario = {
       clip: {
         assetPath: 'meeting-a-celebrity/security-step-in.mp4',
         mockUrl: DEMO_A,
-        trim: { startSec: 0, endSec: 3.4 },
+        trim: { startSec: 0, endSec: 6.2 },
         generation: {
-          prompt: `${CAST} SECURITY fills most of the frame, standing directly in front of the camera so RICO is entirely hidden behind him. One enormous flat hand reaches out and covers the lens. YOU look very small beside him. ${LOOK}`,
-          motion: 'SECURITY steps in on one cut; the hand covers the lens on the next',
+          prompt: `${CAST} SECURITY fills most of the frame, standing directly in front of the camera so KANYE is entirely hidden behind him. Kanye's laugh continues from somewhere off-screen. One enormous flat hand reaches out and covers the lens. YOU look very small beside him. ${LOOK}`,
+          motion:
+            'SECURITY steps in on one cut; the hand covers the lens on the next',
           aspectRatio: '9:16',
-          durationSec: 4,
+          durationSec: 7,
           seed: 120011,
+        },
+        audio: {
+          assetPath: 'meeting-a-celebrity/security-step-in.mp3',
+          lines: [
+            {
+              speaker: 'Security',
+              voice: 'security',
+              text: 'Phone down. Let us go.',
+              delivery: 'deep, slow, completely final',
+              performance: 'deep voice, firmly',
+              atSec: 0.6,
+            },
+            {
+              speaker: 'Kanye',
+              voice: 'kanye',
+              text: 'Ha ha ha! He said it like an album title!',
+              delivery: 'off-screen, delighted by security',
+              performance: 'distant loud laughter',
+              atSec: 2.6,
+            },
+          ],
         },
         art: {
           setting: 'street',
@@ -640,27 +830,49 @@ export const meetingACelebrity: Scenario = {
       clip: {
         assetPath: 'meeting-a-celebrity/ending-mutuals.mp4',
         mockUrl: DEMO_B,
-        trim: { startSec: 0, endSec: 5.8 },
+        trim: { startSec: 0, endSec: 7.6 },
         generation: {
-          prompt: `${CAST} YOU walk away first, grinning, phone lighting up in your hand. RICO glances back over his shoulder once from the shop doorway and nods. THE MANAGER, holding the car door, notices and looks mildly betrayed. ${LOOK}`,
-          motion: 'Flat wide, YOU exit one side while RICO nods once from the doorway',
+          prompt: `${CAST} YOU walk away first, grinning, phone lighting up in your hand. KANYE glances back over his shoulder from the shop doorway, nods, and laughs. THE MANAGER, holding the car door, notices and looks mildly betrayed. A paper graduation cap falls from nowhere. ${LOOK}`,
+          motion:
+            'Flat wide, YOU exit one side while KANYE nods once from the doorway',
           aspectRatio: '9:16',
-          durationSec: 6,
+          durationSec: 8,
           seed: 120012,
+        },
+        audio: {
+          assetPath: 'meeting-a-celebrity/ending-mutuals.mp3',
+          lines: [
+            {
+              speaker: 'Kanye',
+              voice: 'kanye',
+              text: 'Ha! You knew when to leave. That is Graduation. Follow earned.',
+              delivery: 'calling back from the doorway, genuinely impressed',
+              performance: 'laughs warmly, then calls out with approval',
+              atSec: 0.6,
+            },
+            {
+              speaker: 'Manager',
+              voice: 'manager',
+              text: 'Please get in the car.',
+              delivery: 'tired, routine, not surprised',
+              performance: 'controlled and tired',
+              atSec: 5.3,
+            },
+          ],
         },
         art: {
           setting: 'street',
           characters: [
             { key: 'manager', expression: 'flat', back: true },
             { key: 'ari', expression: 'happy' },
-            { key: 'rico', expression: 'happy' },
+            { key: 'kanye', expression: 'happy' },
           ],
           prop: 'phone',
           crowd: true,
         },
       },
       slangTermIds: [],
-      summary: 'Rico followed you back before he reached the door.',
+      summary: 'Kanye followed you back before he reached the door.',
       lesson:
         'You praised the work, kept the ask small, and ended the conversation yourself. Slang got you in the door; timing got you the follow.',
     },
@@ -675,13 +887,26 @@ export const meetingACelebrity: Scenario = {
       clip: {
         assetPath: 'meeting-a-celebrity/ending-photo-no-follow.mp4',
         mockUrl: DEMO_A,
-        trim: { startSec: 0, endSec: 4.6 },
+        trim: { startSec: 0, endSec: 6.9 },
         generation: {
-          prompt: `${CAST} YOU stand alone on the flat sidewalk staring at a phone showing a good photo and an entirely empty notification list. Pedestrians loop past on both sides without stopping. RICO is gone. ${LOOK}`,
+          prompt: `${CAST} YOU stand alone on the flat sidewalk staring at a phone showing a good photo and an entirely empty notification list. Pedestrians loop past on both sides without stopping. KANYE is gone. A tiny paper moon references Donda in the distance. ${LOOK}`,
           motion: 'Locked off, only the looping background pedestrians move',
           aspectRatio: '9:16',
-          durationSec: 5,
+          durationSec: 7,
           seed: 120013,
+        },
+        audio: {
+          assetPath: 'meeting-a-celebrity/ending-photo-no-follow.mp3',
+          lines: [
+            {
+              speaker: 'Mission Control',
+              voice: 'control',
+              text: 'Photo acquired. Follow not acquired. Your 808 is currently experiencing heartbreak.',
+              delivery: 'clinical mission report with one album joke',
+              performance: 'robotic and deadpan',
+              atSec: 0.6,
+            },
+          ],
         },
         art: {
           setting: 'street',
@@ -707,13 +932,26 @@ export const meetingACelebrity: Scenario = {
       clip: {
         assetPath: 'meeting-a-celebrity/ending-blocked.mp4',
         mockUrl: DEMO_B,
-        trim: { startSec: 0.5, endSec: 5.6 },
+        trim: { startSec: 0, endSec: 7.9 },
         generation: {
           prompt: `${CAST} YOU stand alone under a streetlight holding a phone showing an empty grey profile page. Head tilted down. The sidewalk is completely empty now — even the looping pedestrians have stopped. ${LOOK}`,
           motion: 'Static, nothing in frame moves at all',
           aspectRatio: '9:16',
-          durationSec: 6,
+          durationSec: 8,
           seed: 120014,
+        },
+        audio: {
+          assetPath: 'meeting-a-celebrity/ending-blocked.mp3',
+          lines: [
+            {
+              speaker: 'Mission Control',
+              voice: 'control',
+              text: 'Contact lost. Yeezus has left the server. You are now experiencing a beautiful dark twisted block.',
+              delivery: 'dry system notice',
+              performance: 'robotic and faintly amused',
+              atSec: 0.6,
+            },
+          ],
         },
         art: {
           setting: 'street',
@@ -738,13 +976,34 @@ export const meetingACelebrity: Scenario = {
       clip: {
         assetPath: 'meeting-a-celebrity/ending-escorted.mp4',
         mockUrl: DEMO_A,
-        trim: { startSec: 0.2, endSec: 4.4 },
+        trim: { startSec: 0, endSec: 6.3 },
         generation: {
-          prompt: `${CAST} SECURITY walks YOU away by the elbow in flat jerky steps. Six identical cutout bystanders hold up six phones, all filming YOU rather than RICO, who has already left. ${LOOK}`,
+          prompt: `${CAST} SECURITY walks YOU away by the elbow in flat jerky steps. Six identical cutout bystanders hold up six phones, all filming YOU rather than KANYE, who has already left laughing. ${LOOK}`,
           motion: 'Side-on flat tracking shot past a row of raised phones',
           aspectRatio: '9:16',
-          durationSec: 5,
+          durationSec: 7,
           seed: 120015,
+        },
+        audio: {
+          assetPath: 'meeting-a-celebrity/ending-escorted.mp3',
+          lines: [
+            {
+              speaker: 'Security',
+              voice: 'security',
+              text: 'Keep walking.',
+              delivery: 'three syllables, no emotion',
+              performance: 'deep voice, firmly',
+              atSec: 0.6,
+            },
+            {
+              speaker: 'Kanye',
+              voice: 'kanye',
+              text: 'Ha ha ha! This is not the Runaway ending you wanted!',
+              delivery: 'distant, laughing at the entire scene',
+              performance: 'distant explosive laughter',
+              atSec: 2,
+            },
+          ],
         },
         art: {
           setting: 'street',
@@ -773,13 +1032,34 @@ export const meetingACelebrity: Scenario = {
       clip: {
         assetPath: 'meeting-a-celebrity/ending-meme.mp4',
         mockUrl: DEMO_B,
-        trim: { startSec: 0, endSec: 5.2 },
+        trim: { startSec: 0, endSec: 11.2 },
         generation: {
-          prompt: `${CAST} YOU stand alone mid-gesture, still holding up a phone showing an analytics graph, mouth open, frozen in the exact pose that is about to be a sound. A single bystander films from the edge of frame. RICO is nowhere in the shot. ${LOOK}`,
+          prompt: `${CAST} YOU stand alone mid-gesture, still holding up a phone showing an analytics graph, mouth open, frozen in the exact pose that is about to be a sound. A single bystander films from the edge of frame. KANYE is nowhere in the shot. Album-title placards for Graduation, Yeezus, Donda and The Life of Pablo tumble past like paper debris. ${LOOK}`,
           motion: 'Freeze on the worst possible pose and hold it far too long',
           aspectRatio: '9:16',
-          durationSec: 6,
+          durationSec: 12,
           seed: 120016,
+        },
+        audio: {
+          assetPath: 'meeting-a-celebrity/ending-meme.mp3',
+          lines: [
+            {
+              speaker: 'Mission Control',
+              voice: 'control',
+              text: 'Your analytics speech is now a four-hundred-thousand-view sound. The Life of Pablo has become the life of your comment section.',
+              delivery: 'brutally neutral mission report',
+              performance: 'robotic and deadpan',
+              atSec: 0.6,
+            },
+            {
+              speaker: 'Kanye',
+              voice: 'kanye',
+              text: 'Ha ha ha ha!',
+              delivery: 'very distant laugh, as if from another block',
+              performance: 'distant genuine belly laugh',
+              atSec: 9.6,
+            },
+          ],
         },
         art: {
           setting: 'street',

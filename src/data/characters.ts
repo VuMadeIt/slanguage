@@ -7,14 +7,7 @@
  * voice stay in step.
  */
 export type HairStyle =
-  | 'braids'
-  | 'bob'
-  | 'curly'
-  | 'buzz'
-  | 'bald'
-  | 'cap'
-  | 'messy'
-  | 'hood';
+  'braids' | 'bob' | 'curly' | 'buzz' | 'bald' | 'cap' | 'messy' | 'hood';
 
 export type Accessory = 'none' | 'glasses' | 'sunglasses' | 'backpack' | 'tie';
 
@@ -87,9 +80,9 @@ export const CHARACTERS: Record<string, CharacterVisual> = {
     accessory: 'tie',
     heightScale: 1.12,
   },
-  rico: {
-    key: 'rico',
-    name: 'Rico',
+  kanye: {
+    key: 'kanye',
+    name: 'Kanye',
     skin: '#8A5730',
     hair: '#120E0C',
     hairStyle: 'cap',
@@ -138,7 +131,9 @@ export function getCharacter(key: string): CharacterVisual | undefined {
 }
 
 /** Maps a node's `speaker` string onto a cast key for the art fallback. */
-export function characterKeyFromSpeaker(speaker: string | undefined): string | null {
+export function characterKeyFromSpeaker(
+  speaker: string | undefined,
+): string | null {
   if (!speaker) return null;
   const normalized = speaker.trim().toLowerCase();
   if (CHARACTERS[normalized]) return normalized;

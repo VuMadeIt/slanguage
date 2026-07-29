@@ -13,7 +13,7 @@ export type JournalEntry = {
   firstSeenAt: string;
   lastSeenAt: string;
   timesEncountered: number;
-  /** Where they met it — good "you learned this in Rico in the Wild" context. */
+  /** Where they met it — good "you learned this in Kanye in the Wild" context. */
   scenarioIds: string[];
   source: 'story' | 'playground' | 'manual';
   userNote: string;
@@ -51,7 +51,10 @@ export const useJournalStore = create<JournalState>()(
           const existing = state.entries[termId];
           const scenarioIds = context?.scenarioId
             ? [
-                ...new Set([...(existing?.scenarioIds ?? []), context.scenarioId]),
+                ...new Set([
+                  ...(existing?.scenarioIds ?? []),
+                  context.scenarioId,
+                ]),
               ]
             : (existing?.scenarioIds ?? []);
 
@@ -87,7 +90,10 @@ export const useJournalStore = create<JournalState>()(
           const existing = state.entries[termId];
           if (!existing) return state;
           return {
-            entries: { ...state.entries, [termId]: { ...existing, userNote: note } },
+            entries: {
+              ...state.entries,
+              [termId]: { ...existing, userNote: note },
+            },
           };
         }),
 

@@ -18,7 +18,11 @@ import { EndingCard } from './EndingCard';
 import { SceneArtStage } from './SceneArtStage';
 import { StoryAudioTrack } from './StoryAudioTrack';
 import { StoryDevPanel } from './StoryDevPanel';
-import { VideoStage, type StageSource, type VideoStageHandle } from './VideoStage';
+import {
+  VideoStage,
+  type StageSource,
+  type VideoStageHandle,
+} from './VideoStage';
 
 /** Fallback beat length for art mode when a clip has no authored out-point. */
 const DEFAULT_ART_DURATION_SEC = 7;
@@ -62,7 +66,8 @@ export function StoryPlayer({ scenario }: { scenario: Scenario }) {
   const artTiming = useMemo(() => {
     const startSec = getClipStartSec(node.clip);
     const endSec = getClipEndSec(node.clip);
-    const durationSec = endSec === null ? DEFAULT_ART_DURATION_SEC : endSec - startSec;
+    const durationSec =
+      endSec === null ? DEFAULT_ART_DURATION_SEC : endSec - startSec;
     const cue = engine.choiceCueSec;
     return {
       durationSec: Math.max(1.5, durationSec),
@@ -90,7 +95,7 @@ export function StoryPlayer({ scenario }: { scenario: Scenario }) {
   const backHref = planet ? `/story?planet=${planet.id}` : '/story';
 
   return (
-    <div className="relative h-dvh w-full overflow-hidden bg-void-950 select-none">
+    <div className="bg-void-950 relative h-dvh w-full overflow-hidden select-none">
       {useArt ? (
         <SceneArtStage
           className="absolute inset-0"
@@ -117,26 +122,29 @@ export function StoryPlayer({ scenario }: { scenario: Scenario }) {
       )}
 
       <StoryAudioTrack
+        key={playKey}
         track={node.clip.audio}
+        scenarioId={scenario.id}
+        nodeId={node.id}
         playKey={playKey}
         paused={phase !== 'playing'}
         muted={muted}
       />
 
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-void-950/80 to-transparent" />
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-64 bg-gradient-to-t from-void-950/90 to-transparent" />
+      <div className="from-void-950/80 pointer-events-none absolute inset-x-0 top-0 h-32 bg-gradient-to-b to-transparent" />
+      <div className="from-void-950/90 pointer-events-none absolute inset-x-0 bottom-0 h-64 bg-gradient-to-t to-transparent" />
 
       <header className="pt-safe absolute inset-x-0 top-0 z-30 flex items-center gap-2 px-3">
         <Link
           href={backHref}
           aria-label="Leave scenario"
-          className="rounded-full bg-void-900/60 p-2 text-white/90 backdrop-blur transition-colors hover:bg-void-800"
+          className="bg-void-900/60 hover:bg-void-800 rounded-full p-2 text-white/90 backdrop-blur transition-colors"
         >
           <ChevronLeft size={20} />
         </Link>
         <div className="min-w-0 flex-1">
           {planet ? (
-            <p className="truncate text-[10px] font-bold tracking-[0.18em] text-plasma-400 uppercase">
+            <p className="text-plasma-400 truncate text-[10px] font-bold tracking-[0.18em] uppercase">
               {planet.emoji} {planet.name}
             </p>
           ) : null}
@@ -148,7 +156,7 @@ export function StoryPlayer({ scenario }: { scenario: Scenario }) {
           type="button"
           onClick={toggleMute}
           aria-label="Toggle sound"
-          className="rounded-full bg-void-900/60 p-2 text-white/90 backdrop-blur transition-colors hover:bg-void-800"
+          className="bg-void-900/60 hover:bg-void-800 rounded-full p-2 text-white/90 backdrop-blur transition-colors"
         >
           <Volume2 size={18} />
         </button>
@@ -157,7 +165,7 @@ export function StoryPlayer({ scenario }: { scenario: Scenario }) {
             type="button"
             onClick={skipAhead}
             aria-label="Skip ahead"
-            className="rounded-full bg-void-900/60 p-2 text-white/90 backdrop-blur transition-colors hover:bg-void-800"
+            className="bg-void-900/60 hover:bg-void-800 rounded-full p-2 text-white/90 backdrop-blur transition-colors"
           >
             <FastForward size={18} />
           </button>
@@ -168,7 +176,7 @@ export function StoryPlayer({ scenario }: { scenario: Scenario }) {
         <div className="pointer-events-none absolute inset-x-0 bottom-0 z-20 px-5 pb-8">
           <div className="mx-auto max-w-md">
             {node.speaker ? (
-              <p className="text-[11px] font-bold tracking-[0.16em] text-plasma-400 uppercase">
+              <p className="text-plasma-400 text-[11px] font-bold tracking-[0.16em] uppercase">
                 {node.speaker}
               </p>
             ) : null}
@@ -197,10 +205,10 @@ export function StoryPlayer({ scenario }: { scenario: Scenario }) {
       ) : null}
 
       {phase === 'ready' ? (
-        <div className="absolute inset-0 z-40 flex flex-col justify-end bg-gradient-to-t from-void-950 via-void-950/85 to-void-950/30 px-5 pb-10">
+        <div className="from-void-950 via-void-950/85 to-void-950/30 absolute inset-0 z-40 flex flex-col justify-end bg-gradient-to-t px-5 pb-10">
           <div className="mx-auto w-full max-w-md">
             {planet ? (
-              <p className="text-[11px] font-bold tracking-[0.18em] text-plasma-400 uppercase">
+              <p className="text-plasma-400 text-[11px] font-bold tracking-[0.18em] uppercase">
                 Landing on {planet.name} · {planet.dialect}
               </p>
             ) : null}

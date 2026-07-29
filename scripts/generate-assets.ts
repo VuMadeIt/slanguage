@@ -35,12 +35,12 @@ async function main() {
   // Dynamic imports AFTER dotenv, because ESM would otherwise hoist the
   // scenario/voice modules and bake in empty env values.
   const { SCENARIOS } = await import('../src/data/scenarios/index');
-  const { createElevenLabsService } = await import(
-    '../src/services/audio/elevenlabs'
-  );
-  const { createHiggsfieldService } = await import(
-    '../src/services/video/higgsfield'
-  );
+  const { createElevenLabsService } =
+    await import('../src/services/audio/elevenlabs');
+  const { getAudioLineAssetPath } =
+    await import('../src/services/audio/resolveAudio');
+  const { createHiggsfieldService } =
+    await import('../src/services/video/higgsfield');
 
   const scenarios = SCENARIOS.filter((scenario) =>
     scenarioFilter ? scenario.id === scenarioFilter : true,
@@ -65,7 +65,8 @@ async function main() {
   const higgs = createHiggsfieldService();
 
   if (shouldRun) {
-    if (!eleven) console.warn('⚠  ELEVENLABS_API_KEY missing — skipping audio.');
+    if (!eleven)
+      console.warn('⚠  ELEVENLABS_API_KEY missing — skipping audio.');
     if (!higgs) console.warn('⚠  HIGGSFIELD_API_KEY missing — skipping video.');
   }
 
@@ -100,20 +101,23 @@ async function main() {
 
       const audio = node.clip.audio;
       if (audio?.lines.length) {
-        planned += 1;
-        const target = path.join(outRoot, audio.assetPath);
-        console.log(`♪ audio  ${audio.assetPath}`);
-        for (const line of audio.lines) {
-          console.log(`         [${line.voice}] ${line.text.slice(0, 72)}`);
-        }
-        if (shouldRun && eleven) {
-          // Multi-line remix is a follow-up; for v1 we write the primary line.
-          const primary = audio.lines[0];
-          const result = await eleven.synthesize(primary);
-          await mkdir(path.dirname(target), { recursive: true });
-          await writeFile(target, Buffer.from(result.audio));
-          written += 1;
-          console.log(`         wrote ${target}`);
+        planned += audio.lines.length;
+        console.log(
+          `♪ audio  ${audio.assetPath} (${audio.lines.length} lines)`,
+        );
+        for (const [lineIndex, line] of audio.lines.entries()) {
+          const linePath = getAudioLineAssetPath(audio, lineIndex);
+          const target = path.join(outRoot, linePath);
+          console.log(
+            `         ${lineIndex + 1}. [${line.voice}] @${line.atSec ?? 0}s ${line.text.slice(0, 72)}`,
+          );
+          if (shouldRun && eleven) {
+            const result = await eleven.synthesize(line);
+            await mkdir(path.dirname(target), { recursive: true });
+            await writeFile(target, Buffer.from(result.audio));
+            written += 1;
+            console.log(`            wrote ${target}`);
+          }
         }
       }
     }

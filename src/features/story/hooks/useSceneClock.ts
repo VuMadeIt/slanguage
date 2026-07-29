@@ -31,57 +31,45 @@ export function useSceneClock({
 }: Options): { progress: number } {
   const [progress, setProgress] = useState(0);
 
-  const elapsedRef = useRef(0);
-  const firedCueRef = useRef(false);
-  const firedEndRef = useRef(false);
-
-  const onCueRef = useRef(onCue);
-  const onEndedRef = useRef(onEnded);
-  onCueRef.current = onCue;
-  onEndedRef.current = onEnded;
-
-  const pausedRef = useRef(paused);
-  pausedRef.current = paused;
-  const cueRef = useRef(cueSec);
-  cueRef.current = cueSec;
-  const durationRef = useRef(durationSec);
-  durationRef.current = durationSec;
+  // The loop is keyed on `playKey` alone so a re-render never restarts the beat.
+  // Everything it needs to read live goes through this one snapshot instead.
+  const latest = useRef({ durationSec, cueSec, paused, onCue, onEnded });
+  useEffect(() => {
+    latest.current = { durationSec, cueSec, paused, onCue, onEnded };
+  });
 
   useEffect(() => {
-    elapsedRef.current = 0;
-    firedCueRef.current = false;
-    firedEndRef.current = false;
-    setProgress(0);
-
     let raf = 0;
     let last = performance.now();
+    let elapsed = 0;
+    let firedCue = false;
+    let firedEnd = false;
 
     const tick = (now: number) => {
       raf = requestAnimationFrame(tick);
       const delta = now - last;
       last = now;
-      if (pausedRef.current) return;
 
-      elapsedRef.current += delta / 1000;
-      const elapsed = elapsedRef.current;
-      const duration = durationRef.current;
+      const { durationSec: duration, cueSec: cue, paused: isPaused } = latest.current;
+      if (!isPaused) elapsed += delta / 1000;
+      // Set unconditionally so re-entering a node resets the bar even while paused.
       setProgress(duration > 0 ? Math.min(1, elapsed / duration) : 0);
+      if (isPaused) return;
 
-      const cue = cueRef.current;
-      if (cue !== null && !firedCueRef.current && elapsed >= cue) {
-        firedCueRef.current = true;
-        onCueRef.current?.();
+      if (cue !== null && !firedCue && elapsed >= cue) {
+        firedCue = true;
+        latest.current.onCue?.();
         return;
       }
-      if (!firedEndRef.current && elapsed >= duration) {
+      if (!firedEnd && elapsed >= duration) {
         // A cue sitting on the out-point still wins, matching VideoStage.
-        if (cue !== null && !firedCueRef.current) {
-          firedCueRef.current = true;
-          onCueRef.current?.();
+        if (cue !== null && !firedCue) {
+          firedCue = true;
+          latest.current.onCue?.();
           return;
         }
-        firedEndRef.current = true;
-        onEndedRef.current();
+        firedEnd = true;
+        latest.current.onEnded();
       }
     };
 

@@ -9,7 +9,10 @@
     "lint": "eslint",
     "format": "prettier --write .",
     "generate:assets": "tsx --tsconfig tsconfig.json scripts/generate-assets.ts",
-    "preview:art": "tsx --tsconfig tsconfig.json scripts/preview-scene-art.tsx"
+    "preview:art": "tsx --tsconfig tsconfig.json scripts/preview-scene-art.tsx",
+    "scenarios:check": "tsx --tsconfig tsconfig.json scripts/check-scenarios.ts",
+    "voices:check": "tsx --tsconfig tsconfig.json scripts/check-elevenlabs.ts",
+    "voices:design": "tsx --tsconfig tsconfig.json scripts/design-elevenlabs-voices.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.115.0",

@@ -8,7 +8,7 @@
  *
  * Writes to .preview/. Defaults to one node per setting.
  */
-import { mkdirSync, writeFileSync } from 'node:fs';
+import { mkdirSync } from 'node:fs';
 import { join } from 'node:path';
 
 import React from 'react';

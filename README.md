@@ -2,7 +2,7 @@
 
 **A galaxy of slang.** Travel planet to planet learning how internet slang actually works — through branching video stories where the wrong word has consequences.
 
-Think Duolingo meets Urban Dictionary meets Telltale, wrapped in a playful space theme: each planet is a dialect world (hallway slang, workplace tone, dating chat…), and you land on one to learn by *being in the room*.
+Think Duolingo meets Urban Dictionary meets Telltale, wrapped in a playful space theme: each planet is a dialect world (hallway slang, workplace tone, dating chat…), and you land on one to learn by _being in the room_.
 
 This repo is a **demoable v1 prototype**: mobile-first web app, space-themed UI, crude cutout visuals in the spirit of South Park, one fully authored school scenario with Higgsfield + ElevenLabs generation specs, stub screens for the rest.
 
@@ -18,7 +18,7 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000).
 
-**Try the core loop:** Galaxy → **Touch down** on *First Bell* (or Planets → Scholaris). Make choices, hunt endings, watch aura points swing.
+**Try the core loop:** Galaxy → **Touch down** on _First Bell_ (or Planets → Scholaris). Make choices, hunt endings, watch aura points swing.
 
 Other commands:
 
@@ -26,7 +26,11 @@ Other commands:
 npm run build
 npm run lint
 npm run format
+npm run scenarios:check                              # graph + dialogue-timing lint
 npm run generate:assets                              # dry-run the video/audio worklist
+npm run voices:check                                 # validate key, model + every cast voice
+npm run voices:design                                # preview original persona designs
+npm run voices:design -- --run                       # create them + update .env.local
 npm run generate:assets -- --run                     # call Higgsfield + ElevenLabs
 npm run generate:assets -- --run --scenario first-day-of-class
 npm run preview:art                                  # render scene art to .preview/*.png
@@ -46,23 +50,28 @@ npm run preview:art -- lunch-table ending-table      # …or specific nodes
 
 ### Planets (content packs)
 
-| Planet | Dialect | Status |
-|---|---|---|
-| **Scholaris** | Hallway Standard | Live — *First Bell* |
-| **Clout Prime** | Camera-Facing | Live — *Rico in the Wild* |
-| Cubicle IX | Workplace Casual | Coming soon |
-| Situationship | Dry-Text Dialect | Coming soon |
-| Irie | Patois Basics | Coming soon |
+| Planet          | Dialect          | Status                     |
+| --------------- | ---------------- | -------------------------- |
+| **Scholaris**   | Hallway Standard | Live — _First Bell_        |
+| **Clout Prime** | Camera-Facing    | Live — _Kanye in the Wild_ |
+| Cubicle IX      | Workplace Casual | Coming soon                |
+| Situationship   | Dry-Text Dialect | Coming soon                |
+| Irie            | Patois Basics    | Coming soon                |
 
 ---
 
-## Sample scenario: *First Bell*
+## Sample scenario: _First Bell_
 
-`src/data/scenarios/first-day-of-class.ts` — immigrant student, first day of US high school.
+`src/data/scenarios/first-day-of-class.ts` — immigrant student, one full day at a US high school, bus stop to last bell.
 
-- **4 decision points**, **5 endings** (table / almost / glazer / NPC / solo)
-- Teaches hallway essentials: *bet, no cap, lowkey, vibe check, bussin', mid, fanum tax, glaze, sigma, NPC…*
-- Failure is about using *more* slang than the moment asked for — fluency ≠ volume
+- **26 nodes**, **8 decisions deep**, **6 endings** (table / almost / glazer / NPC / solo / big yikes)
+- Five acts: arrival → homeroom → lunch → afternoon → last bell. ~3m20s of clip time on the longest path
+- Teaches hallway essentials: _bet, no cap, lowkey, bruh, vibe check, bussin', mid, fanum tax, cook, glaze, sigma, NPC, big yikes…_
+- Failure is about using _more_ slang than the moment asked for — fluency ≠ volume
+
+`npm run scenarios:check` is the authoring net: it walks every branch for dangling
+pointers and unknown slang ids, and flags dialogue scheduled after the clock stops
+or lines that would talk over each other.
 - Comedy is South Park-shaped (deadpan kids, catastrophically fast social fallout, an adult who never notices) but the feedback and lessons play straight
 - Every node carries **cutout `art`**, a **Higgsfield video prompt** (locked cast + seed + cutout style contract), and **ElevenLabs dialogue lines**
 
@@ -83,7 +92,25 @@ Now each clip carries a structured `art` spec — setting, cast, expression, pro
 
 ## Higgsfield + ElevenLabs pipeline
 
-Higgsfield returns **silent** video. ElevenLabs supplies the funny high-school dialogue as a separate synced layer. That split is intentional:
+Higgsfield returns **silent** video. ElevenLabs supplies character dialogue as
+separate, timed lines. Mock mode calls the secure `/api/story-audio` route on
+demand; generated mode loads the same per-line MP3s from the CDN. If credentials
+are missing, character-tuned browser speech takes over instead of leaving a
+silent scene.
+
+Each voice has its own persona, Eleven v3 performance direction, stability/style
+settings, and browser fallback profile in `src/data/voice-personas.ts`. Kanye
+uses an original licensed/designed theatrical rapper voice — never a clone of
+his real voice.
+
+Casting is driven by **who a character is** — age, region, energy, status in the
+room — never by how they look. Ari is careful and quiet because they are reading a
+new room; Tyler is fast and nasal because he cannot stop helping. The nine
+`rate`/`pitch` fallback values are deliberately spread so the cast stays
+distinguishable with your eyes shut, and so two characters who look alike never
+sound alike.
+
+That split is intentional:
 
 - Re-record a line after a slang term ages out → one TTS call, no re-shoot
 - Re-render a shot with a better prompt → video swap, audio stays
@@ -92,12 +119,15 @@ Higgsfield returns **silent** video. ElevenLabs supplies the funny high-school d
 
 ### Generate assets
 
-1. Fill `.env.local` with keys and ElevenLabs voice ids (see `.env.example`)
-2. `npm run generate:assets` — prints the worklist
-3. `npm run generate:assets -- --run` — writes into `public/generated/`
-4. Set `NEXT_PUBLIC_VIDEO_BASE_URL` (CDN, or `/generated` via your host) and `NEXT_PUBLIC_USE_MOCK_VIDEOS=false`
+1. Put `ELEVENLABS_API_KEY` in `.env.local`
+2. Add licensed voice ids manually, or run `npm run voices:design -- --run`
+   to create the nine original character personas and update `.env.local`
+3. `npm run voices:check` — validates the key, model and every voice id
+4. `npm run generate:assets` — prints the worklist
+5. `npm run generate:assets -- --run` — writes every line into `public/generated/`
+6. Set `NEXT_PUBLIC_VIDEO_BASE_URL` (CDN, or `/generated` via your host) and `NEXT_PUBLIC_USE_MOCK_VIDEOS=false`
 
-> **Note on Higgsfield:** their public API surface has shifted as the product matured. The client in `src/services/video/higgsfield.ts` is deliberately thin (create + poll) so endpoint paths can be adjusted in one file when their API moves. Same idea for ElevenLabs voice ids — scenarios reference *keys* (`dez`, `priya`…), never raw ids.
+> **Note on Higgsfield:** their public API surface has shifted as the product matured. The client in `src/services/video/higgsfield.ts` is deliberately thin (create + poll) so endpoint paths can be adjusted in one file when their API moves. Same idea for ElevenLabs voice ids — scenarios reference _keys_ (`dez`, `priya`…), never raw ids.
 
 ---
 
@@ -121,7 +151,7 @@ Run state dies with the player. Journal, progress, and entitlements persist to l
 
 ### Scenario data: directed graph + Zod + generation specs + art
 
-`scene` / `beat` / `ending` nodes. Generation metadata and `art` live *on the node*, so a clip can never drift from the beat it illustrates.
+`scene` / `beat` / `ending` nodes. Generation metadata and `art` live _on the node_, so a clip can never drift from the beat it illustrates.
 
 ### Entitlements: pure gate functions
 
@@ -165,14 +195,14 @@ scripts/
 
 See `.env.example`. Highlights:
 
-| Variable | Purpose |
-|---|---|
-| `NEXT_PUBLIC_USE_MOCK_VIDEOS` | Stock / art stand-ins (default `true`) |
-| `NEXT_PUBLIC_USE_SCENE_ART` | Draw un-generated beats as cutouts (default `true`) |
-| `NEXT_PUBLIC_VIDEO_BASE_URL` | CDN / generated-assets origin |
-| `ELEVENLABS_API_KEY` + `ELEVENLABS_VOICE_*` | Dialogue TTS |
-| `HIGGSFIELD_API_KEY` | Text-to-video |
-| `ANTHROPIC_API_KEY` | Live Comms replies |
+| Variable                                    | Purpose                                             |
+| ------------------------------------------- | --------------------------------------------------- |
+| `NEXT_PUBLIC_USE_MOCK_VIDEOS`               | Stock / art stand-ins (default `true`)              |
+| `NEXT_PUBLIC_USE_SCENE_ART`                 | Draw un-generated beats as cutouts (default `true`) |
+| `NEXT_PUBLIC_VIDEO_BASE_URL`                | CDN / generated-assets origin                       |
+| `ELEVENLABS_API_KEY` + `ELEVENLABS_VOICE_*` | Dialogue TTS                                        |
+| `HIGGSFIELD_API_KEY`                        | Text-to-video                                       |
+| `ANTHROPIC_API_KEY`                         | Live Comms replies                                  |
 
 ---
 

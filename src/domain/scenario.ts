@@ -41,8 +41,13 @@ export const voiceLineSchema = z.object({
   /** Key into `services/audio/voices.ts`, not a raw ElevenLabs id. */
   voice: z.string().min(1),
   text: z.string().min(1),
-  /** Delivery note mapped onto ElevenLabs stability/style settings. */
+  /** Human-readable direction for authors and generation manifests. */
   delivery: z.string().optional(),
+  /**
+   * Eleven v3 audio-tag direction without brackets, e.g. "laughs warmly".
+   * Falls back to the character persona when omitted.
+   */
+  performance: z.string().min(1).optional(),
   /** Seconds into the clip where this line starts. */
   atSec: z.number().min(0).optional(),
 });
@@ -116,6 +121,12 @@ export const sceneArtSchema = z.object({
     )
     .max(4),
   prop: scenePropSchema.optional(),
+  /**
+   * Cast key of whoever is holding the prop. Without it a prop is drawn at frame
+   * centre, which lands on top of the middle character in any scene with three
+   * or more of them.
+   */
+  propHolder: z.string().optional(),
   /** Crowd silhouettes behind the principals. */
   crowd: z.boolean().optional(),
   /** Deadpan on-screen gag card, South Park chapter-title energy. */

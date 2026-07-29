@@ -16,6 +16,11 @@ const FRAME_W = 400;
 const FRAME_H = 600;
 const HORIZON = 430;
 
+const FRONT_BASELINE = 578;
+const BACK_BASELINE = 442;
+/** Roughly hand height at frame centre — the point props are drawn around. */
+const PROP_ANCHOR = { x: 200, y: 520 };
+
 /**
  * Composition tables rather than evenly divided slots.
  *
@@ -189,13 +194,21 @@ function Crowd() {
 }
 
 /**
- * A raised phone belongs behind the principals (someone in the room is filming);
- * everything else is handled by them and belongs in front. Drawn centred behind
- * the cast, a tray or a fry carton disappears entirely the moment a scene has a
- * third character standing in the middle.
+ * A raised phone belongs behind the principals — someone in the room is filming,
+ * not one of the cast.
  */
 function isRaisedProp(prop: SceneProp): boolean {
   return prop === 'phone-raised';
+}
+
+/**
+ * Food sits on the table rather than in anybody's hands, so it stays at frame
+ * centre — which is the gap between the cast — and ignores `propHolder`. Moved
+ * onto its owner it lands across their face, because these shapes are drawn
+ * table-height and tall rather than hand-height and small.
+ */
+function isGroundProp(prop: SceneProp): boolean {
+  return prop === 'fries' || prop === 'tray';
 }
 
 function Prop({ prop }: { prop: SceneProp }) {
@@ -290,10 +303,43 @@ export function CutoutScene({ art, speakingKey, className }: Props) {
   const prop = art.prop ?? 'none';
   const raised = isRaisedProp(prop);
 
+  // Move the prop to its owner's hands, matching that row's position and scale.
+  // A prop held by someone in the back row also has to be drawn behind the front
+  // row, or it floats over the people standing in front of them.
+  const holderKey = isGroundProp(prop) ? undefined : art.propHolder;
+  const holderIndexFront = front.findIndex((i) => i.visual.key === holderKey);
+  const holderIndexBack = back.findIndex((i) => i.visual.key === holderKey);
+  const holderInBack = holderIndexFront < 0 && holderIndexBack >= 0;
+  const holderIndex = holderInBack ? holderIndexBack : holderIndexFront;
+
+  let propTransform: string | undefined;
+  if (holderIndex >= 0) {
+    const row = holderInBack ? back : front;
+    const table = holderInBack ? BACK_LAYOUT : FRONT_LAYOUT;
+    const layout = table[row.length] ?? table[4];
+    const dx = (layout.xs[holderIndex] ?? PROP_ANCHOR.x) - PROP_ANCHOR.x;
+    const dy = holderInBack ? BACK_BASELINE - FRONT_BASELINE : 0;
+    const scale = holderInBack ? layout.scale : 1;
+    propTransform =
+      `translate(${dx} ${dy}) translate(${PROP_ANCHOR.x} ${PROP_ANCHOR.y}) ` +
+      `scale(${scale}) translate(${-PROP_ANCHOR.x} ${-PROP_ANCHOR.y})`;
+  }
+
+  const propLayer =
+    prop === 'none' ? null : (
+      <g transform={propTransform}>
+        <Prop prop={prop} />
+      </g>
+    );
+
+  // Three depths, not two: a raised phone sits behind everyone, a prop held by a
+  // back-row character sits between the rows, and everything else sits in front.
+  const propDepth = raised ? 'behind' : holderInBack ? 'between' : 'front';
+
   const render = (items: typeof cast, isBack: boolean) => {
     const table = isBack ? BACK_LAYOUT : FRONT_LAYOUT;
     const layout = table[items.length] ?? table[4];
-    const baseline = isBack ? 442 : 578;
+    const baseline = isBack ? BACK_BASELINE : FRONT_BASELINE;
 
     return items.map((item, index) => {
       const x = layout.xs[index] ?? FRAME_W / 2;
@@ -323,10 +369,11 @@ export function CutoutScene({ art, speakingKey, className }: Props) {
     >
       <Backdrop setting={art.setting} />
       {art.crowd ? <Crowd /> : null}
-      {raised ? <Prop prop={prop} /> : null}
+      {propDepth === 'behind' ? propLayer : null}
       {render(back, true)}
+      {propDepth === 'between' ? propLayer : null}
       {render(front, false)}
-      {raised ? null : <Prop prop={prop} />}
+      {propDepth === 'front' ? propLayer : null}
 
       {art.gag ? (
         <g>
